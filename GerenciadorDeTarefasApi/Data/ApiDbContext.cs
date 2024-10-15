@@ -9,5 +9,5 @@ public class ApiDbContext : DbContext
     {
 
     }
-    public DbSet<Tarefa> Tarefa { get; set; }  
+    public DbSet<Tarefa> Tarefas { get; set; }  
 }

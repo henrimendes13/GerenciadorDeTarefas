@@ -22,16 +22,32 @@ public class TarefaController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesDefaultResponseType]
     public async Task<ActionResult<IEnumerable<Tarefa>>> GetTarefas()
     {
-        return await _context.Tarefa.ToListAsync();
+        if (_context.Tarefas  == null)
+        {
+            return NotFound();
+        }
+
+        return await _context.Tarefas.ToListAsync();
     }
 
 
     [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesDefaultResponseType]
     public async Task<ActionResult<Tarefa>> GetTarefa(int id)
     {
-        var tarefa = await _context.Tarefa.FindAsync(id);
+        if (_context.Tarefas == null)
+        {
+            return NotFound();
+        }
+
+        var tarefa = await _context.Tarefas.FindAsync(id);
 
         if (tarefa == null)
         {
@@ -43,23 +59,35 @@ public class TarefaController : ControllerBase
 
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesDefaultResponseType]
     public async Task<ActionResult<Tarefa>> PostTarefa([FromBody] Tarefa tarefa)
     {
+        if (_context.Tarefas == null) 
+        {
+            return Problem("Erro ao criar uma tarefa, contate o suporte!");
+        }
+
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            return ValidationProblem(ModelState);
         }
 
         tarefa.DataCriacao = DateTime.Now;
 
-        _context.Tarefa.Add(tarefa);
+        _context.Tarefas.Add(tarefa);
         await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetTarefa), new { id = tarefa.Id }, tarefa);
     }
 
 
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesDefaultResponseType]
     public async Task<IActionResult> PutTarefa(int id, Tarefa tarefa)
     {
         if (id != tarefa.Id)
@@ -90,15 +118,24 @@ public class TarefaController : ControllerBase
 
 
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesDefaultResponseType]
     public async Task<IActionResult> DeleteTarefa(int id)
     {
-        var tarefa = await _context.Tarefa.FindAsync(id);
+        if (_context.Tarefas == null)
+        {
+            return NotFound();
+        }
+
+        var tarefa = await _context.Tarefas.FindAsync(id);
+
         if (tarefa == null)
         {
             return NotFound();
         }
 
-        _context.Tarefa.Remove(tarefa);
+        _context.Tarefas.Remove(tarefa);
         await _context.SaveChangesAsync();
 
         return NoContent();
@@ -106,6 +143,6 @@ public class TarefaController : ControllerBase
 
     private bool TarefaExists(int id)
     {
-        return _context.Tarefa.Any(e => e.Id == id);
+        return _context.Tarefas.Any(e => e.Id == id);
     }
 }

@@ -9,7 +9,7 @@ public class Tarefa
     public int Id { get; set; }
     
     [Required(ErrorMessage = "O título é obrigatório.")]
-    [StringLength(100, ErrorMessage = "O título não pode exceder 30 caracteres.")]
+    [StringLength(30, ErrorMessage = "O título não pode exceder 30 caracteres.")]
     public string Titulo { get; set; }
     
     [Required(ErrorMessage = "A descrição é obrigatória.")]
@@ -19,7 +19,21 @@ public class Tarefa
     public DateTime DataCriacao { get; set; } = DateTime.Now;
     
     [Required(ErrorMessage = "A data de entrega é obrigatória.")]
-    [DataType(DataType.Date)]
+    [DataType(DataType.Date, ErrorMessage = "Data em formato inválido. Utilize yyyy-mm-dd")]
     [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+    [FutureDate(ErrorMessage = "A data de entrega nao pode ser uma data passada.")]
+
     public DateTime DataParaEntrega { get; set; }
+}
+
+public class FutureDateAttribute : ValidationAttribute
+{
+    public override bool IsValid(object value)
+    {
+        if (value is DateTime date)
+        {
+            return date >= DateTime.Today;
+        }
+        return false;
+    }
 }
