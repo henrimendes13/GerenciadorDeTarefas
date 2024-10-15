@@ -1,0 +1,52 @@
+# Build results
+bin/
+obj/
+Debug/
+Release/
+
+# Visual Studio files
+.vscode/
+.vs/
+*.user
+*.suo
+
+# ASP.NET
+wwwroot/
+
+# Dependencies
+packages/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+
+# Logs and temporary files
+*.log
+*.tmp
+*.cache
+
+# Database files
+*.mdf
+*.ldf
+
+# Entity Framework migrations
+Migrations/
+
+# Rider files
+.idea/
+
+# Resharper
+*.DotSettings.user
+
+# Coverage
+*.coverage
+*.coveragexml
+
+# Publish outputs
+publish/
+
+# Configuration files (if they contain sensitive data)
+appsettings.Development.json
+appsettings.Local.json
+
+# Git ignore backups
+.gitignore.bak
