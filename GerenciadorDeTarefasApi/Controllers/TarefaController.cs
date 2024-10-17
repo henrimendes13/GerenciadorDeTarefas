@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GerenciadorDeTarefasApi.Data;
 using GerenciadorDeTarefasApi.Models;
+using AutoMapper;
+using GerenciadorDeTarefasApi.DTOs;
 
 namespace GerenciadorDeTarefasApi.Controllers;
 
@@ -15,24 +17,28 @@ namespace GerenciadorDeTarefasApi.Controllers;
 public class TarefaController : ControllerBase
 {
     private readonly ApiDbContext _context;
+    private readonly IMapper _mapper;
 
-    public TarefaController(ApiDbContext context)
+    public TarefaController(ApiDbContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesDefaultResponseType]
-    public async Task<ActionResult<IEnumerable<Tarefa>>> GetTarefas()
+    public async Task<ActionResult<IEnumerable<TarefaReadDTO>>> GetTarefas()
     {
         if (_context.Tarefas  == null)
         {
             return NotFound();
         }
 
-        return await _context.Tarefas.ToListAsync();
+        var tarefas = await _context.Tarefas.ToListAsync();
+        var tarefaDtos = _mapper.Map<List<TarefaReadDTO>>(tarefas);
+        return Ok(tarefaDtos);
     }
 
 
@@ -40,7 +46,7 @@ public class TarefaController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesDefaultResponseType]
-    public async Task<ActionResult<Tarefa>> GetTarefa(int id)
+    public async Task<ActionResult<TarefaReadDTO>> GetTarefa(int id)
     {
         if (_context.Tarefas == null)
         {
@@ -54,7 +60,7 @@ public class TarefaController : ControllerBase
             return NotFound();
         }
 
-        return tarefa;
+        return _mapper.Map<TarefaReadDTO>(tarefa);
     }
 
 
@@ -62,7 +68,7 @@ public class TarefaController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesDefaultResponseType]
-    public async Task<ActionResult<Tarefa>> PostTarefa([FromBody] Tarefa tarefa)
+    public async Task<ActionResult<TarefaReadDTO>> PostTarefa([FromBody] TarefaCreateDTO tarefaCreateDTO)
     {
         if (_context.Tarefas == null) 
         {
@@ -74,12 +80,14 @@ public class TarefaController : ControllerBase
             return ValidationProblem(ModelState);
         }
 
+        var tarefa = _mapper.Map<Tarefa>(tarefaCreateDTO);
         tarefa.DataCriacao = DateTime.Now;
 
         _context.Tarefas.Add(tarefa);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetTarefa), new { id = tarefa.Id }, tarefa);
+        var tarefaReadDto = _mapper.Map<TarefaReadDTO>(tarefa);
+        return CreatedAtAction(nameof(GetTarefa), new { id = tarefa.Id }, tarefaReadDto);
     }
 
 

@@ -28,8 +28,6 @@ project.fragment.lock.json
 *.mdf
 *.ldf
 
-# Entity Framework migrations
-Migrations/
 
 # Rider files
 .idea/
