@@ -9,6 +9,7 @@ using GerenciadorDeTarefasApi.Data;
 using GerenciadorDeTarefasApi.Models;
 using AutoMapper;
 using GerenciadorDeTarefasApi.DTOs;
+using GerenciadorDeTarefasApi.Services;
 
 namespace GerenciadorDeTarefasApi.Controllers;
 
@@ -16,31 +17,19 @@ namespace GerenciadorDeTarefasApi.Controllers;
 [ApiController]
 public class TarefaController : ControllerBase
 {
-    private readonly ApiDbContext _context;
-    private readonly IMapper _mapper;
+    private readonly ITarefaService _tarefaService;
 
-    public TarefaController(ApiDbContext context, IMapper mapper)
+    public TarefaController(ITarefaService tarefaService)
     {
-        _context = context;
-        _mapper = mapper;
+        _tarefaService = tarefaService;
     }
 
     [HttpGet]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesDefaultResponseType]
     public async Task<ActionResult<IEnumerable<TarefaReadDTO>>> GetTarefas()
     {
-        if (_context.Tarefas  == null)
-        {
-            return NotFound();
-        }
-
-        var tarefas = await _context.Tarefas.ToListAsync();
-        var tarefaDtos = _mapper.Map<List<TarefaReadDTO>>(tarefas);
-        return Ok(tarefaDtos);
+        var tarefas = await _tarefaService.GetTarefasAsync();
+        return Ok(tarefas);
     }
-
 
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -48,19 +37,14 @@ public class TarefaController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<ActionResult<TarefaReadDTO>> GetTarefa(int id)
     {
-        if (_context.Tarefas == null)
-        {
-            return NotFound();
-        }
-
-        var tarefa = await _context.Tarefas.FindAsync(id);
+        var tarefa = await _tarefaService.GetTarefaByIdAsync(id);
 
         if (tarefa == null)
         {
             return NotFound();
         }
 
-        return _mapper.Map<TarefaReadDTO>(tarefa);
+        return Ok(tarefa);
     }
 
 
@@ -68,26 +52,10 @@ public class TarefaController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesDefaultResponseType]
-    public async Task<ActionResult<TarefaReadDTO>> PostTarefa([FromBody] TarefaCreateDTO tarefaCreateDTO)
+    public async Task<ActionResult<TarefaReadDTO>> PostTarefa(TarefaCreateDTO tarefaCreateDto)
     {
-        if (_context.Tarefas == null) 
-        {
-            return Problem("Erro ao criar uma tarefa, contate o suporte!");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            return ValidationProblem(ModelState);
-        }
-
-        var tarefa = _mapper.Map<Tarefa>(tarefaCreateDTO);
-        tarefa.DataCriacao = DateTime.Now;
-
-        _context.Tarefas.Add(tarefa);
-        await _context.SaveChangesAsync();
-
-        var tarefaReadDto = _mapper.Map<TarefaReadDTO>(tarefa);
-        return CreatedAtAction(nameof(GetTarefa), new { id = tarefa.Id }, tarefaReadDto);
+        var tarefaReadDto = await _tarefaService.CreateTarefaAsync(tarefaCreateDto);
+        return CreatedAtAction(nameof(GetTarefa), new { id = tarefaReadDto.Id }, tarefaReadDto);
     }
 
 
@@ -96,31 +64,13 @@ public class TarefaController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesDefaultResponseType]
-    public async Task<IActionResult> PutTarefa(int id, Tarefa tarefa)
+    public async Task<IActionResult> PutTarefa(int id, TarefaUpdateDTO tarefaUpdateDto)
     {
-        if (id != tarefa.Id)
+        var result = await _tarefaService.UpdateTarefaAsync(id, tarefaUpdateDto);
+        if (!result)
         {
-            return BadRequest();
+            return NotFound();
         }
-
-        _context.Entry(tarefa).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!TarefaExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
-
         return NoContent();
     }
 
@@ -131,26 +81,12 @@ public class TarefaController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<IActionResult> DeleteTarefa(int id)
     {
-        if (_context.Tarefas == null)
+        var result = await _tarefaService.DeleteTarefaAsync(id);
+        if (!result)
         {
             return NotFound();
         }
-
-        var tarefa = await _context.Tarefas.FindAsync(id);
-
-        if (tarefa == null)
-        {
-            return NotFound();
-        }
-
-        _context.Tarefas.Remove(tarefa);
-        await _context.SaveChangesAsync();
-
         return NoContent();
     }
-
-    private bool TarefaExists(int id)
-    {
-        return _context.Tarefas.Any(e => e.Id == id);
-    }
+        
 }

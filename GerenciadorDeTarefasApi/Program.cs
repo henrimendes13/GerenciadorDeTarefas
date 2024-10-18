@@ -1,10 +1,13 @@
 using GerenciadorDeTarefasApi.Data;
+using GerenciadorDeTarefasApi.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddScoped<ITarefaService, TarefaService>();
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddControllers();
 
@@ -14,12 +17,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseInMemoryDatabase("TarefasDb"));
 
-/*builder.Services.AddDbContext<ApiDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));*/
-
-builder.Services.AddControllers();
-
 var app = builder.Build();
+
 
 if (app.Environment.IsDevelopment())
 {

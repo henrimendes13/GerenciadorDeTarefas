@@ -10,6 +10,8 @@ namespace GerenciadorDeTarefasApi.Pofiles
         {
             CreateMap<Tarefa, TarefaReadDTO>();
             CreateMap<TarefaCreateDTO, Tarefa>();
+            CreateMap<TarefaUpdateDTO, Tarefa>();
+            CreateMap<Tarefa, TarefaUpdateDTO>();
         }
     }
 }
