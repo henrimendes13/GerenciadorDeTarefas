@@ -60,10 +60,10 @@ public class TarefaController : ControllerBase
 
 
     [HttpPut("{id:int}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesDefaultResponseType]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> PutTarefa(int id, TarefaUpdateDTO tarefaUpdateDto)
     {
         var result = await _tarefaService.UpdateTarefaAsync(id, tarefaUpdateDto);
@@ -71,13 +71,13 @@ public class TarefaController : ControllerBase
         {
             return NotFound();
         }
-        return NoContent();
+        return Ok("Tarefa atualizada.");
     }
 
 
     [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesDefaultResponseType]
     public async Task<IActionResult> DeleteTarefa(int id)
     {
@@ -86,7 +86,7 @@ public class TarefaController : ControllerBase
         {
             return NotFound();
         }
-        return NoContent();
+        return Ok("Tarefa deletada.");
     }
         
 }

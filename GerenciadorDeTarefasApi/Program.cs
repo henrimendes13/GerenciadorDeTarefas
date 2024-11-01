@@ -1,4 +1,5 @@
 using GerenciadorDeTarefasApi.Data;
+using GerenciadorDeTarefasApi.Repositories;
 using GerenciadorDeTarefasApi.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<ITarefaService, TarefaService>();
+builder.Services.AddScoped<ITarefaRepository, TarefaRepository>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

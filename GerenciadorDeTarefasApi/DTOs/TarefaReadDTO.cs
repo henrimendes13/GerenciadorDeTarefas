@@ -8,7 +8,7 @@ public class TarefaReadDTO
 
     public string Descricao { get; set; }
 
-    public bool Finalizada { get; set; }
+    public bool Finalizada { get; set; } = false;
 
     public DateTime DataCriacao { get; set; }
 

@@ -14,7 +14,7 @@ public class TarefaCreateDTO
     [StringLength(500, ErrorMessage = "A descrição não pode exceder 500 caracteres.")]
     public string Descricao { get; set; }
 
-    public bool Finalizada { get; set; }
+    public bool Finalizada { get; set; } = false;
 
     [Required(ErrorMessage = "A data de entrega é obrigatória.")]
     [DataType(DataType.Date)]
