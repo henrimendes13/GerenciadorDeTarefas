@@ -3,7 +3,9 @@ using GerenciadorDeTarefasApi.Data;
 using GerenciadorDeTarefasApi.DTOs;
 using GerenciadorDeTarefasApi.Models;
 using GerenciadorDeTarefasApi.Repositories;
+using GerenciadorDeTarefasApi.Services.Exceptions;
 using Microsoft.EntityFrameworkCore;
+
 
 
 namespace GerenciadorDeTarefasApi.Services;
@@ -31,7 +33,7 @@ public class TarefaService : ITarefaService
 
         if (tarefa == null)
         {
-            return null;
+            throw new TarefaNotFoundException("Tarefa ID not found");
         }
 
         return _mapper.Map<TarefaReadDTO>(tarefa);
@@ -40,8 +42,12 @@ public class TarefaService : ITarefaService
     public async Task<TarefaReadDTO> CreateTarefaAsync(TarefaCreateDTO tarefaCreateDto)
     {
         var tarefa = _mapper.Map<Tarefa>(tarefaCreateDto);
-        tarefa.DataCriacao = DateTime.Now;
-        tarefa.Finalizada = false;
+       
+        var nomeTarefaJaExiste = await NomeTarefaExistente(tarefaCreateDto.Titulo);
+        if (nomeTarefaJaExiste)
+        {
+            throw new TituloJaExistenteException("O Nome da tarefa já existe em outra tarefa.");
+        }
 
         await _tarefaRepository.CreateTarefaAsync(tarefa);
 
@@ -78,4 +84,8 @@ public class TarefaService : ITarefaService
         return true;
     }
 
+    public async Task<bool> NomeTarefaExistente(string titulo)
+    {
+        return await _tarefaRepository.NomeTarefaExistente(titulo);
+    }
 }

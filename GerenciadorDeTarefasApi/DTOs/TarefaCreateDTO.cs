@@ -1,4 +1,5 @@
 ﻿using GerenciadorDeTarefasApi.Models;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
@@ -13,7 +14,8 @@ public class TarefaCreateDTO
     [Required(ErrorMessage = "A descrição é obrigatória.")]
     [StringLength(500, ErrorMessage = "A descrição não pode exceder 500 caracteres.")]
     public string Descricao { get; set; }
-
+    
+    [DefaultValue(false)]
     public bool Finalizada { get; set; } = false;
 
     [Required(ErrorMessage = "A data de entrega é obrigatória.")]
@@ -22,6 +24,14 @@ public class TarefaCreateDTO
     [DateFormat(ErrorMessage = "Data em formato inválido. Utilize yyyy-MM-dd.")]
     [FutureDate(ErrorMessage = "A data de entrega nao pode ser uma data passada.")]
     public string DataParaEntrega { get; set; }
+
+    public TarefaCreateDTO(string titulo, string descricao, bool finalizada, string dataParaEntrega)
+    {
+        Titulo = titulo;
+        Descricao = descricao;
+        Finalizada = finalizada;
+        DataParaEntrega = dataParaEntrega;
+    }
 }
 
 public class FutureDateAttribute : ValidationAttribute

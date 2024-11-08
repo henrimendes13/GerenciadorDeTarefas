@@ -8,7 +8,7 @@ namespace GerenciadorDeTarefasApi.DTOs
     {
         public string Titulo { get; set; }
         public string Descricao { get; set; }
-        public bool Finalizada { get; set; }
+        public bool Finalizada { get; set; } = false;
         [Required(ErrorMessage = "A data de entrega é obrigatória.")]
         [DataType(DataType.Date, ErrorMessage = "Data em formato inválido. Utilize yyyy-MM-dd")]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]

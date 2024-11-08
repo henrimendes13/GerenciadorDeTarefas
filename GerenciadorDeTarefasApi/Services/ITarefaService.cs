@@ -9,4 +9,5 @@ public interface ITarefaService
     Task<TarefaReadDTO> CreateTarefaAsync(TarefaCreateDTO tarefaCreateDto);
     Task<bool> UpdateTarefaAsync(int id, TarefaUpdateDTO tarefaUpdateDto);
     Task<bool> DeleteTarefaAsync(int id);
+    Task<bool> NomeTarefaExistente(string titulo);
 }

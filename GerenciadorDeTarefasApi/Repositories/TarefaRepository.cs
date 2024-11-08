@@ -1,5 +1,6 @@
 ﻿using GerenciadorDeTarefasApi.Data;
 using GerenciadorDeTarefasApi.Models;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace GerenciadorDeTarefasApi.Repositories;
@@ -40,6 +41,11 @@ public class TarefaRepository : ITarefaRepository
     public async Task<IEnumerable<Tarefa>> GetTarefasAsync()
     {
         return await _context.Tarefas.ToListAsync();
+    }
+
+    public async Task<bool> NomeTarefaExistente(string titulo)
+    {
+        return await _context.Tarefas.AnyAsync(t => t.Titulo == titulo);
     }
 
     public async Task<bool> UpdateTarefaAsync(int id, Tarefa tarefa)

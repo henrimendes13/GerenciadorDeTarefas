@@ -10,6 +10,7 @@ using GerenciadorDeTarefasApi.Models;
 using AutoMapper;
 using GerenciadorDeTarefasApi.DTOs;
 using GerenciadorDeTarefasApi.Services;
+using GerenciadorDeTarefasApi.Services.Exceptions;
 
 namespace GerenciadorDeTarefasApi.Controllers;
 
@@ -37,14 +38,15 @@ public class TarefaController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<ActionResult<TarefaReadDTO>> GetTarefa(int id)
     {
-        var tarefa = await _tarefaService.GetTarefaByIdAsync(id);
-
-        if (tarefa == null)
+        try
         {
-            return NotFound();
+            var tarefa = await _tarefaService.GetTarefaByIdAsync(id);
+            return Ok(tarefa);
         }
-
-        return Ok(tarefa);
+        catch (TarefaNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
     }
 
 
@@ -54,8 +56,15 @@ public class TarefaController : ControllerBase
     [ProducesDefaultResponseType]
     public async Task<ActionResult<TarefaReadDTO>> PostTarefa(TarefaCreateDTO tarefaCreateDto)
     {
-        var tarefaReadDto = await _tarefaService.CreateTarefaAsync(tarefaCreateDto);
-        return CreatedAtAction(nameof(GetTarefa), new { id = tarefaReadDto.Id }, tarefaReadDto);
+        try
+        {
+            var tarefaReadDto = await _tarefaService.CreateTarefaAsync(tarefaCreateDto);
+            return CreatedAtAction(nameof(GetTarefa), new { id = tarefaReadDto.Id }, tarefaReadDto);
+        }
+        catch (TituloJaExistenteException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
 
@@ -88,5 +97,5 @@ public class TarefaController : ControllerBase
         }
         return Ok("Tarefa deletada.");
     }
-        
+
 }

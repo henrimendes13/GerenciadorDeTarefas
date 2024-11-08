@@ -12,4 +12,26 @@ public class Tarefa
     public bool Finalizada { get; set; } = false;
     public DateTime DataCriacao { get; set; } = DateTime.Now;
     public DateTime DataParaEntrega { get; set; }
+
+    public Tarefa()
+    {
+    }
+
+    public Tarefa(int id, string titulo, string descricao, bool finalizada, DateTime dataCriacao, DateTime dataParaEntrega)
+    {
+        Id = id;
+        Titulo = titulo;
+        Descricao = descricao;
+        Finalizada = finalizada;
+        DataCriacao = dataCriacao;
+        DataParaEntrega = dataParaEntrega;
+    }
+
+    public Tarefa(string titulo, string descricao, bool finalizada, DateTime dataParaEntrega)
+    {
+        Titulo = titulo;
+        Descricao = descricao;
+        Finalizada = finalizada;
+        DataParaEntrega = dataParaEntrega;
+    }
 }

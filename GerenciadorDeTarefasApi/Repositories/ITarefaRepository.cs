@@ -9,5 +9,7 @@ namespace GerenciadorDeTarefasApi.Repositories
         Task<Tarefa> CreateTarefaAsync(Tarefa tarefa);
         Task<bool> UpdateTarefaAsync(int id, Tarefa tarefa); 
         Task<bool> DeleteTarefaAsync(int id);
+        Task<bool> NomeTarefaExistente(string titulo);
+
     }
 }
